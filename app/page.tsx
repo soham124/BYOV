@@ -34,10 +34,8 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Fetch all posts and filter out private ones client-side.
-        // Many posts may not have an explicit `isPrivate` field — relying on
-        // a where("isPrivate", "==", false) would exclude those.
-        // To ensure all public verses are shown, fetch posts and filter locally.
+        // Fetch all public posts (not private and not drafts)
+        // Note: Without explicit isPrivate field, posts are considered public by default
         const q = query(collection(db, "posts"))
         const snapshot = await getDocs(q)
         
@@ -61,8 +59,10 @@ export default function HomePage() {
           }),
         )
 
+        // Filter to show only public posts (not private and not drafts)
         // Treat documents without `isPrivate` or with `isPrivate === false` as public
-        const publicPosts = postsData.filter((p) => p.isPrivate !== true)
+        // Treat documents without `isDraft` or with `isDraft === false` as published
+        const publicPosts = postsData.filter((p) => p.isPrivate !== true && p.isDraft !== true)
 
         publicPosts.sort((a, b) => {
           const timeA = a.createdAt?.toDate?.() || new Date(0)
