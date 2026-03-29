@@ -1,4 +1,3 @@
-
 "use client"
 import type React from "react"
 import type { Metadata } from "next"
@@ -7,6 +6,7 @@ import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
 import Navbar from "@/components/navbar"
 import { useEffect, useState } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -24,13 +24,20 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}> 
-      <body className="bg-background text-foreground font-sans"> 
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body className="bg-background text-foreground font-sans">
         {mounted ? (
-          <AuthProvider>
-            <Navbar />
-            <main>{children}</main>
-          </AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AuthProvider>
+              <Navbar />
+              <main>{children}</main>
+            </AuthProvider>
+          </ThemeProvider>
         ) : null}
       </body>
     </html>
